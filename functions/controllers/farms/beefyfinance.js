@@ -14,6 +14,8 @@ const farmName = "Beefy Finance";
 var cachePathRawPools, cachePathApys, cachePathTvl, cachePathData;
 
 module.exports = class beefy {
+
+  // cachePath will be handed over
   constructor(cachePath) {
     cachePathRawPools = cachePath + "beefyRawPoolData.json";
     cachePathApys = cachePath + "beefyPoolApys.json";
@@ -36,6 +38,7 @@ module.exports = class beefy {
       }
 
       if (isCache) {
+        // load cache
         let data = fs.readFileSync(cachePathRawPools, 'utf8');
         console.log("cache loaded");
         return JSON.parse(data);
@@ -44,9 +47,15 @@ module.exports = class beefy {
 
     // no cache available OR refresh wanted --> load data from website
     console.log("calling beefy farm data ...");
-    const poolsResponse = await request(urlIds);
+    var poolsResponse;
+    try {
+      poolsResponse = await request(urlIds);
+    } catch(e) {
+      console.error(urlIds, e.message);
+    }
     const pools = Object.freeze(
       eval(
+        // remove the beginning --> is now in JSON format
         poolsResponse.body.replace(/export\s+const\s+bscPools\s+=\s+/, "")
       ).filter(p => {
         return p.status === "active" || p.depositsPaused !== false;
@@ -76,6 +85,7 @@ module.exports = class beefy {
       }
 
       if (isCache) {
+        // load cache
         let data = fs.readFileSync(cachePathApys, 'utf8');
         console.log("cache loaded");
         return JSON.parse(data);
@@ -83,12 +93,13 @@ module.exports = class beefy {
     }
 
     // no cache available OR refresh wanted --> call data from API
+    var dataApy;
     try {
-      const dataApy = await request(urlApy);
-      apys = JSON.parse(dataApy.body);
+      dataApy = await request(urlApy);
     } catch(e) {
       console.error(urlApy, e.message);
     }
+    apys = JSON.parse(dataApy.body);
 
     // save Apy data for later
     var json = JSON.stringify(apys);
@@ -113,6 +124,7 @@ module.exports = class beefy {
       }
 
       if (isCache) {
+        // load cache
         let data = fs.readFileSync(cachePathTvl, 'utf8');
         console.log("cache loaded");
         return JSON.parse(data);
@@ -120,13 +132,16 @@ module.exports = class beefy {
     }
 
     // no cache available OR refresh wanted --> call data from API
+    var dataTvl;
     try {
-      const dataTvl = await request(urlTvl);
-      tvl = JSON.parse(dataTvl.body);
+      dataTvl = await request(urlTvl);
     } catch(e) {
       console.error(urlTvl, e.message);
     }
+    tvl = JSON.parse(dataTvl.body);
 
+    // use the data after the key "56" 
+    // "56" stands for Binance Smart Chain
     tvl = tvl["56"];
 
     // save TVL data for later
@@ -150,6 +165,7 @@ module.exports = class beefy {
       }
 
       if (isCache) {
+        // load cache
         let d = fs.readFileSync(cachePathData, 'utf8');
         console.log("cache loaded");
         return JSON.parse(d);
