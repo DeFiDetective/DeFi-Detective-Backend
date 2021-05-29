@@ -1,5 +1,5 @@
-const Beefy = require('./beefyfinance');
-let bf = new Beefy("./cache/");
+const Beefy = require('../../../functions/controllers/platforms/beefyfinance');
+let bf = new Beefy("../../../functions/controllers/platforms/cache/");
 
 (async() => {
     console.log("-> start test");

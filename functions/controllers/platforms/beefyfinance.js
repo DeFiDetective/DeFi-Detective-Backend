@@ -158,10 +158,10 @@ module.exports = class beefy {
       let isCache;
       if (fs.existsSync(cachePathData)) {
         isCache = true;
-        console.log("Beefy Full Data | cache available");
+        console.log("Beefy full data | cache available");
       } else {
         isCache = false;
-        console.log("Beefy Full Data | cache unavailable");
+        console.log("Beefy full data | cache unavailable");
       }
 
       if (isCache) {
@@ -185,11 +185,12 @@ module.exports = class beefy {
       data[address] = {
         "name": raw.name, 
         "farmName": farmName,
-        "type": raw.oracle == "tokens" ? "single" : "lps",
+        "type": raw.oracle == "tokens" ? "single" : "lp",
         "assets": raw.assets,
         "apy": apys[raw.id],
         "tvl": tvl[raw.id],
         "logo": raw.logo,
+        "underlyingPlatform": raw.platform,
         "buyTokenUrl": raw.buyTokenUrl,
         "addLiquidityUrl": raw.addLiquidityUrl
       };
